@@ -1,9 +1,9 @@
 # -*- coding: utf8 -*-
 from __future__ import print_function
 
+import argparse
 import re
 import sqlite3 as sql
-import sys
 
 # A regex for parsing words and their part of speech annotation
 ENTRY_REGEX = re.compile(r'(?P<word>[^\{]+) \{(?P<pos>.+)\}')
@@ -53,13 +53,20 @@ def parse_dict_line(line):
 
 
 def main():
-    src, dst = sys.argv[1:3]
-    db = sql.connect(dst)
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-s', '--src', type=str, required=True,
+                        help='The DING dictionary file to ingest.')
+    parser.add_argument('-d', '--dest', default='dict.db',
+                        help='The path to the output database file')
+    args = parser.parse_args()
+
+    db = sql.connect(args.dest)
     db.text_factory = lambda x: unicode(x, "utf-8", "ignore")
     with db:
         db.executescript(DB_INIT_SCRIPT)
     try:
-        parse_dict_into_db(src, db)
+        parse_dict_into_db(args.src, db)
     finally:
         db.commit()
         db.close()
