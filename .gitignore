@@ -1,0 +1,6 @@
+*.py[c|d]
+*.egg-info
+dist/
+build/
+
+.DS_Store
