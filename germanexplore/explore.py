@@ -2,6 +2,8 @@
 from __future__ import print_function
 
 import argparse
+from six import text_type
+from six.moves import input
 import sqlite3 as sql
 
 FIND_STMT = "SELECT * FROM germandict WHERE german=?"
@@ -36,7 +38,7 @@ def lookup_words(db):
     while True:
         print("Enter a German word to look up: ", end='')
         try:
-            word = raw_input()
+            word = input()
         except (KeyboardInterrupt, EOFError):
             print()
             break
@@ -57,7 +59,7 @@ def main():
     args = parser.parse_args()
 
     db = sql.connect(args.dictionary)
-    db.text_factory = lambda x: unicode(x, "utf-8", "ignore")
+    db.text_factory = lambda x: text_type(x, "utf-8", "ignore")
     try:
         lookup_words(db)
     finally:
